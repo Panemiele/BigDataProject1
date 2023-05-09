@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 """reducer.py"""
 
 import sys
@@ -13,7 +13,6 @@ first_10_prods = {}
 words_count_in_review = {}
 first_10_prods_in_year = {}
 result = {}
-
 
 #############
 # FUNCTIONS #
@@ -42,20 +41,10 @@ def addItemInResult(year, prod_id, most_common_words):
     else:
         result[year] = {prod_id: [most_common_words]}
 
-
 #######################################
 # Leggi le righe dallo standard input #
 #######################################
-# for line in sys.stdin:
-import csv
-
-lines = []
-with open('C:\\Users\\Gabri\\OneDrive\\Documenti\\Università\\BigData\\Progetti\\Progetto1\\Dataset\\test.csv',
-          newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-    for row in reader:
-        lines.append(row[0] + "," + row[1])
-for line in lines:
+for line in sys.stdin:
     year_prod_id, text = line.strip().split(',')
     year, prod_id = year_prod_id.strip().split('_')
     addItemInProductReviewsPerYear(year, prod_id, text)
