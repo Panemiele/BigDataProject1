@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 """mapper.py"""
 import datetime
 import sys
