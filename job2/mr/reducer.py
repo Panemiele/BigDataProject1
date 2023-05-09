@@ -2,34 +2,50 @@
 """reducer.py"""
 
 import sys
+import collections
+import itertools
 
-# this dictionary maps each word to the sum of the values
-# that the mapper has computed for that word
-word_2_sum = {}
+########################
+# VARIABLE DEFINITIONS #
+########################
+user_num_and_denom_list = []
+user_to_count_infos = {}
+result = {}
 
-# input comes from STDIN
-# note: this is the output from the mapper!
-for line in sys.stdin:
 
-    # as usual, remove leading/trailing spaces
-    line = line.strip()
+#############
+# FUNCTIONS #
+#############
 
-    # parse the input elements
-    current_word, current_count = line.split("\t")
 
-    # convert count (currently a string) to int
-    try:
-        current_count = int(current_count)
-    except ValueError:
-        # count was not a number, so
-        # silently ignore/discard this line
-        continue
+#######################################
+# Leggi le righe dallo standard input #
+#######################################
+# for line in sys.stdin:
+import csv
 
-    # initialize words that were not seen before with 0
-    if current_word not in word_2_sum:
-        word_2_sum[current_word] = 0
+lines = []
+with open('C:\\Users\\Gabri\\OneDrive\\Documenti\\Università\\BigData\\Progetti\\Progetto1\\Dataset\\test2.csv',
+          newline='') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+    for row in reader:
+        lines.append(row[0] + "," + row[1] + "," + row[2])
+for line in lines:
+    user_id, num, denom = line.strip().split(',')
+    user_num_and_denom_list.append((user_id, int(num), int(denom)))
 
-    word_2_sum[current_word] += current_count
+########################################################################
+# Ordiniamo il dizionario in base al numero di recensioni per prodotto #
+########################################################################
+for user, num, denom in user_num_and_denom_list:
+    if(user not in user_to_count_infos):
+        user_to_count_infos[user] = (0,0)
+    if(num != 0 and denom != 0):
+        user_to_count_infos[user] = (user_to_count_infos[user][0] + (num/denom), user_to_count_infos[user][1] + 1)
+    else:
+        user_to_count_infos[user] = (user_to_count_infos[user][0], user_to_count_infos[user][1] + 1)
 
-for word in word_2_sum:
-    print("%s\t%i" % (word, word_2_sum[word]))
+for user in user_to_count_infos:
+    result[user] = user_to_count_infos[user][0]/user_to_count_infos[user][1]
+
+print(result)
