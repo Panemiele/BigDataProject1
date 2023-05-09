@@ -3,16 +3,13 @@
 
 import sys
 
+# Funzione che restituisce una tripla (user_id, num, denom) a partire da una riga del file CSV
+def parse_input_line(line):
+    row = line.strip().split(',')
+    user_id, num, denom = row[2], row[3], row[4]
+    return (user_id, num, denom)
+
 # read lines from STDIN (standard input)
 for line in sys.stdin:
-
-    # removing leading/trailing whitespaces
-    line = line.strip()
-
-    # split the current line into words
-    words = line.split(" ")
-
-    for word in words:
-        # write in standard output the mappings word -> 1
-        # in the form of tab-separated pairs
-        print('%s\t%i' % (word, 1))
+    (user_id, num, denom) = parse_input_line(line)
+    print('%s,%i,%i' % (user_id, num, denom))
