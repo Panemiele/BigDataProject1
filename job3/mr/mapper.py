@@ -1,18 +1,21 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 """mapper.py"""
-
+import datetime
 import sys
 
-# read lines from STDIN (standard input)
+# Funzione che restituisce una tupla (anno, (prod_id, testo)) a partire da una riga del file CSV
+def parse_input_line(line):
+    row = line.strip().split(',')
+    prod_id, user_id, score = row[1], row[2], int(row[5])
+    return prod_id, user_id, score
+
+# Salta gli header del dataset
+sys.stdin.readline()
+# Leggi le righe dallo standard input
 for line in sys.stdin:
 
-    # removing leading/trailing whitespaces
-    line = line.strip()
-
-    # split the current line into words
-    words = line.split(" ")
-
-    for word in words:
-        # write in standard output the mappings word -> 1
-        # in the form of tab-separated pairs
-        print('%s\t%i' % (word, 1))
+    try:
+        prod_id, user_id, score = parse_input_line(line)
+    except ValueError:
+        continue
+    print("%s,%s,%i" % (user_id, prod_id, score))
