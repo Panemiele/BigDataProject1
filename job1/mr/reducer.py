@@ -45,8 +45,8 @@ def addItemInResult(year, prod_id, most_common_words):
 # Leggi le righe dallo standard input #
 #######################################
 for line in sys.stdin:
-    year_prod_id, text = line.strip().split(',')
-    year, prod_id = year_prod_id.strip().split('_')
+    year_prod_id, text = line.strip().split('#_#_')
+    year, prod_id = year_prod_id.strip().split('___')
     addItemInProductReviewsPerYear(year, prod_id, text)
 
 ########################################################################
@@ -75,4 +75,16 @@ for year, product_reviews in product_reviews_per_year.items():
         # Abbiamo la conta di ciascuna parola, bisogna selezionare le 5 più ricorrenti
         sorted_words_counter = collections.OrderedDict(sorted(words_counter.items(), key=lambda x: x[1], reverse=True))
         addItemInResult(year, prod, list(itertools.islice(sorted_words_counter.items(), 5)))
-print(result)
+
+##################################
+# Stampa il risultato formattato #
+##################################
+for year, prod_id_review in result.items():
+    is_year_printed = False
+    for prod_id, reviews in prod_id_review.items():
+        for review in reviews:
+            if(is_year_printed == False):
+                print("%i\t%s\t%s" % (int(year), prod_id, review))
+                is_year_printed = True
+            else:
+                print("\t%s\t%s" % (prod_id, review))
