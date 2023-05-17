@@ -13,5 +13,8 @@ df.loc[df['HelpfulnessNumerator'] > df['HelpfulnessDenominator'], 'HelpfulnessNu
 # Modificare il nome della colonna "Time" in "ReviewTime"
 df.columns = df.columns.str.replace('Time', 'ReviewTime')
 
+# Rimuovi tutte le virgole e caratteri speciali dalle recensioni
+df["Text"] = df["Text"].replace(r'[^a-zA-Z0-9 ]+', ' ', regex=True)
+
 # sovrascrivi il file CSV con il nuovo DataFrame
 df.to_csv(nome_nuovo_file, index=False)

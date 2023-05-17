@@ -1,5 +1,5 @@
 #!/usr/bin/python
-"""reducer.py"""
+"""reducerJob1.py"""
 
 import sys
 import collections

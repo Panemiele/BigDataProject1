@@ -1,9 +1,7 @@
 #!/usr/bin/python
-"""reducer.py"""
+"""reducerJob2.py"""
 
 import sys
-import collections
-import itertools
 
 ########################
 # VARIABLE DEFINITIONS #
