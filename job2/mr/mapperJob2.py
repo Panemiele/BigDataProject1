@@ -1,5 +1,5 @@
 #!/usr/bin/python
-"""mapper.py"""
+"""mapperJob2.py"""
 
 import sys
 

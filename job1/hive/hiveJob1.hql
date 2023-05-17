@@ -1,6 +1,7 @@
 drop table reviews;
 drop table TopTenProductsPerYear;
-drop table WordCountPerProduct;
+drop table ProductReviewPerYear;
+drop table Result;
 
 CREATE TABLE IF NOT EXISTS reviews (
 Id int,
@@ -29,11 +30,16 @@ create table TopTenProductsPerYear as
     where t1.prodRank <= 10
     order by anno, prodRank;
 
-create table WordCountPerProduct as
-    select r.ProductId, r.Text, year(from_unixtime((r.ReviewTime))) as anno
-    from reviews r
-    where r.ProductId in  (
-        select t.ProductId
-        from TopTenProductsPerYear t
-        where t.anno = year(from_unixtime((r.ReviewTime)))
-    )
+create table ProductReviewPerYear as
+    select r.ProductId, regexp_replace(r.Text, "\\t", "") as text , TTPPY.anno
+    from reviews r join TopTenProductsPerYear TTPPY on r.ProductId = TTPPY.ProductId;
+
+create table Result as
+    select d.anno, d.ProductId, d.word, d.conta
+    from (
+        select t.anno, t.ProductId, word, count(word) as conta, row_number() over (partition by t.anno, t.ProductId order by count(word) desc) as prodRank
+        from ProductReviewPerYear t LATERAL VIEW explode(split(lower(text), ' ')) singleword AS word
+        where length(word) >= 4
+        group by t.ProductId, t.anno, word
+    ) d
+    where prodRank <= 5;
