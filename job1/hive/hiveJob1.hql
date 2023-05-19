@@ -31,14 +31,14 @@ create table TopTenProductsPerYear as
     order by anno, prodRank;
 
 create table ProductReviewPerYear as
-    select r.ProductId, regexp_replace(r.Text, "\\t", "") as text , TTPPY.anno
-    from reviews r join TopTenProductsPerYear TTPPY on r.ProductId = TTPPY.ProductId;
+    select  TTPPY.anno, r.ProductId, r.Text
+    from reviews r join TopTenProductsPerYear TTPPY on (r.ProductId = TTPPY.ProductId and year(from_unixtime((r.ReviewTime))) = TTPPY.anno);
 
 create table Result as
     select d.anno, d.ProductId, d.word, d.conta
     from (
         select t.anno, t.ProductId, word, count(word) as conta, row_number() over (partition by t.anno, t.ProductId order by count(word) desc) as prodRank
-        from ProductReviewPerYear t LATERAL VIEW explode(split(lower(text), ' ')) singleword AS word
+        from ProductReviewPerYear t LATERAL VIEW explode(split(text, ' ')) singleword AS word
         where length(word) >= 4
         group by t.ProductId, t.anno, word
     ) d

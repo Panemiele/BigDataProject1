@@ -3,7 +3,7 @@
 
 import argparse
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, desc
 from pyspark.sql.functions import avg
 from pyspark.sql.types import IntegerType
 
@@ -31,6 +31,18 @@ infoDF = typedDF\
     .select("UserId", "HelpfulnessNumerator", "HelpfulnessDenominator")\
     .where(typedDF["HelpfulnessDenominator"] != 0)
 user2UtilityDF = infoDF.groupby("UserId").agg(avg((col("HelpfulnessNumerator") * 1.0) / col("HelpfulnessDenominator")).alias("Apprezzamento"))
-result = user2UtilityDF.sort(user2UtilityDF[1].desc)
+result = user2UtilityDF.sort(desc("Apprezzamento"))
 
 result.show()
+
+# TEST: vedere il valore per l'utente A1DM7QQFK8EKNW (atteso: (1/2 + 1/2 + 1/2 + 1/2 + 1/2 + 1/2) / 6 = 0,5
+# result.where(typedDF["UserId"] == "A1DM7QQFK8EKNW").show()
+#
+#
+# OUTPUT OTTENUTO:
+# +--------------+-------------+
+# |        UserId|Apprezzamento|
+# +--------------+-------------+
+# |A1DM7QQFK8EKNW|          0.5|
+# +--------------+-------------+
+#
