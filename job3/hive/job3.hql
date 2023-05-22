@@ -23,8 +23,6 @@ FIELDS TERMINATED BY ',';
 LOAD DATA LOCAL INPATH '/Users/eros/Downloads/BigDataProject1/CleanedDataset.csv' OVERWRITE INTO TABLE reviews;
 
 
-CREATE TABLE
-
 CREATE TABLE allUsers AS
 SELECT UserId, Collect_Set(ProductId) AS products
 FROM reviews
@@ -33,19 +31,21 @@ GROUP BY UserId
 HAVING COUNT(*) >= 3;
 
 CREATE TABLE groups AS
-SELECT a1.UserId AS user1, a2.UserId AS user2
-FROM allUsers a1
-JOIN allUsers a2
-ON a1.UserId < a2.UserId;
+SELECT Collect_Set(UserId) AS users , Collect_Set(ProductId) AS common_products
+FROM all_Users u
+JOIN reviews r
+ON u.UserId != r.UserId AND ARRAY_CONTAINS(u.products, r.ProductId)
+GROUP BY u.UserId;
 
 CREATE TABLE result AS
-SELECT r.UserId, r.ProductId
-FROM reviews r
-JOIN groups g
-ON r.UserId = g.user1 OR r.UserId = g.user2;
+SELECT g.users, g.common_products
+FROM groups
+HAVING COUNT(users)>1;
+
 
 SELECT *
 FROM result;
+
 
 DROP TABLE reviews;
 DROP TABLE allUsers;
