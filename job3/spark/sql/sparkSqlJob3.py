@@ -45,4 +45,4 @@ groupsDF = usersDF.alias("u").join(datasetDF.alias("p"), (usersDF["user_id"] != 
 resultDF = groupsDF.filter("size(users) > 1")
 
 # Show the result
-result_df.show()
+result_DF.show()
