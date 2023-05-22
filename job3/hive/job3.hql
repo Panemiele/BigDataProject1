@@ -39,7 +39,7 @@ GROUP BY u.UserId;
 
 CREATE TABLE result AS
 SELECT g.users, g.common_products
-FROM groups
+FROM groups g
 HAVING COUNT(users)>1;
 
 
