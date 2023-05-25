@@ -29,6 +29,8 @@ parser.add_argument("--output_path", type=str, help="Output folder path")
 args = parser.parse_args()
 input_filepath, output_filepath = args.input_path, args.output_path
 
+start_time = time.time()
+
 # initialize SparkSession with the proper configuration
 spark = SparkSession \
     .builder \
@@ -45,14 +47,12 @@ user2NumDenomRDD = removedHeaderRDD.map(
     f=lambda line: (re.split(regex, line)[2], re.split(regex, line)[3], re.split(regex, line)[4]))
 user2UtilityRDD = user2NumDenomRDD.map(f=lambda info: (info[0], calcolaUtilita(info[1], info[2])))
 user2SumUtilityRDD = user2UtilityRDD.reduceByKey(func=lambda x, y: (x[0] + y[0], x[1] + y[1]))
-user2apprRDD = user2SumUtilityRDD.map(f=lambda item: (item[0], calcolaApprezzamento(item[1][0], item[1][1])))
+user2apprRDD = user2SumUtilityRDD.map(f=lambda item: (item[0], calcolaApprezzamento(item[1][0], item[1][1]))).cache()
 result = user2apprRDD.sortBy(lambda item: item[1], ascending=False)
 
-start_time = time.time()
 result.collect()
 end_time = time.time()
 print("Total execution time: {} seconds".format(end_time - start_time))
-print("ok")
 
 # write all <year, list of (word, occurrence)> pairs in file
 result.saveAsTextFile(output_filepath)

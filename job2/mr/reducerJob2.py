@@ -2,6 +2,7 @@
 """reducerJob2.py"""
 
 import sys
+import time
 
 ########################
 # VARIABLE DEFINITIONS #
@@ -24,7 +25,8 @@ def addItemInUserToCountInfos(user, num, denom):
 # Leggi le righe dallo standard input #
 #######################################
 for line in sys.stdin:
-    user_id, num, denom = line.strip().split(',')
+    infos, start_time = line.strip().split('__#__')
+    user_id, num, denom = infos.strip().split(',')
     user_num_and_denom_list.append((user_id, int(num), int(denom)))
 
 ############################################################
@@ -44,3 +46,4 @@ for user in user_to_count_infos:
 sorted_result_items = sorted(result.items(), key=lambda x: x[1], reverse=True)
 for item in sorted_result_items:
     print(item)
+print("Execution Time: %f" % (time.time() - float(start_time)))

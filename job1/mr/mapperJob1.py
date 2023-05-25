@@ -2,6 +2,8 @@
 """mapperJob1.py"""
 import datetime
 import sys
+import time
+
 
 # Funzione che restituisce una tupla (anno, (prod_id, testo)) a partire da una riga del file CSV
 def parse_input_line(line):
@@ -9,6 +11,8 @@ def parse_input_line(line):
     prod_id, time, text = row[1], row[6], row[7]
     year = datetime.datetime.utcfromtimestamp(int(time)).strftime('%Y')
     return year, (prod_id, text)
+
+start_time = time.time()
 
 # Salta gli header del dataset
 sys.stdin.readline()
@@ -20,4 +24,4 @@ for line in sys.stdin:
     except ValueError:
         continue
     # Emit la coppia chiave-valore (anno_prod_id, testo) per ogni prodotto
-    print("%s#_#_%s" % (year + "___" + prod_id, text))
+    print("%s#_#_%s__#__%s" % (year + "___" + prod_id, text, start_time))

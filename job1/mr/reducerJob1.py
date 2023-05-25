@@ -4,6 +4,7 @@
 import sys
 import collections
 import itertools
+import time
 
 ########################
 # VARIABLE DEFINITIONS #
@@ -45,7 +46,8 @@ def addItemInResult(year, prod_id, most_common_words):
 # Leggi le righe dallo standard input #
 #######################################
 for line in sys.stdin:
-    year_prod_id, text = line.strip().split('#_#_')
+    infos, start_time = line.strip().split('__#__')
+    year_prod_id, text = infos.strip().split('#_#_')
     year, prod_id = year_prod_id.strip().split('___')
     addItemInProductReviewsPerYear(year, prod_id, text)
 
@@ -88,3 +90,4 @@ for year, prod_id_review in result.items():
                 is_year_printed = True
             else:
                 print("\t%s\t%s" % (prod_id, review))
+print("Execution Time: %f" % (time.time() - float(start_time)))
