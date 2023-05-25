@@ -1,14 +1,15 @@
 #!/usr/bin/python
 """mapperJob3.py"""
-
-import datetime
 import sys
+import time
 
-# Funzione che restituisce una tupla (anno, (prod_id, testo)) a partire da una riga del file CSV
+
 def parse_input_line(line):
     row = line.strip().split(',')
     prod_id, user_id, score = row[1], row[2], int(row[5])
     return prod_id, user_id, score
+
+start_time = time.time()
 
 # Salta gli header del dataset
 sys.stdin.readline()
@@ -17,6 +18,6 @@ for line in sys.stdin:
     try:
         prod_id, user_id, score = parse_input_line(line)
         if score >= 4:
-            print('%s\t%s' % (user_id, prod_id))
+            print('%s\t%s__#__%s' % (user_id, prod_id, start_time))
     except ValueError:
         continue

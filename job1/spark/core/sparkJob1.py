@@ -30,6 +30,8 @@ parser.add_argument("--output_path", type=str, help="Output folder path")
 args = parser.parse_args()
 input_filepath, output_filepath = args.input_path, args.output_path
 
+start_time = time.time()
+
 # initialize SparkSession with the proper configuration
 spark = SparkSession \
     .builder \
@@ -51,7 +53,7 @@ parsedRDD = removedHeaderRDD.map(
 )
 
 # Calcolo del numero di recensioni per ogni prodotto in ogni anno
-prodReviewsCountRDD = parsedRDD.map(lambda x: ((x[0], x[1]), 1)).reduceByKey(lambda x, y: x + y)
+prodReviewsCountRDD = parsedRDD.map(lambda x: ((x[0], x[1]), 1)).reduceByKey(lambda x, y: x + y).cache()
 
 # Ordinamento dei prodotti per il numero di recensioni in ordine decrescente
 sortedProdReviewsRDD = prodReviewsCountRDD.sortBy(lambda x: x[1], ascending=False)\
@@ -63,31 +65,33 @@ topProductsRDD = sortedProdReviewsRDD\
     .mapValues(list)\
     .map(lambda x: (x[0], x[1][:10]))\
     .flatMapValues(list)\
-    .map(lambda x: (x, 1))
+    .map(lambda x: (x, 1))\
+    .cache()
 
 # Estrazione delle parole dalle recensioni
 yearProd2FilteredWordsRDD = parsedRDD\
     .map(lambda x: ((x[0], x[1]), list(filter(lambda word: len(word) >= 4, x[2].strip().split()))))\
     .flatMapValues(list)
-yearProdAndWord2CountRDD = yearProd2FilteredWordsRDD.map(lambda x: ((x[0], x[1]), 1)).reduceByKey(lambda a, b: a + b)
+yearProdAndWord2CountRDD = yearProd2FilteredWordsRDD\
+    .map(lambda x: ((x[0], x[1]), 1)).reduceByKey(lambda a, b: a + b)\
+    .cache()
 sortedYearProdWordsRDD = yearProdAndWord2CountRDD.sortBy(lambda x: x[1], ascending=False)
 year2ProdSortedWords = sortedYearProdWordsRDD\
     .map(lambda x: (x[0][0], (x[0][1], x[1])))
 top5WordsPerYearProduct = year2ProdSortedWords.groupByKey().mapValues(list) \
-    .map(lambda x: (x[0], x[1][:5]))
+    .map(lambda x: (x[0], x[1][:5]))\
+    .cache()
 
 # Unione dei conteggi delle parole con i prodotti
 joinRDD = topProductsRDD.join(top5WordsPerYearProduct)
 
 # Raggruppamento delle parole per prodotto e anno
-groupedWordsRDD = joinRDD.map(lambda x: ((x[0][0], x[0][1]), x[1][1]))
+groupedWordsRDD = joinRDD.map(lambda x: ((x[0][0], x[0][1]), x[1][1])).cache()
 result = groupedWordsRDD.sortBy(lambda x: x[0][1]).sortBy(lambda x: x[0][0])
 
-start_time = time.time()
 result.collect()
 end_time = time.time()
 print("Total execution time: {} seconds".format(end_time - start_time))
-print("ok")
 
 # write all <year, list of (word, occurrence)> pairs in file
 result.saveAsTextFile(output_filepath)

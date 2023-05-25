@@ -2,6 +2,7 @@
 """spark application"""
 
 import argparse
+import time
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, desc
 from pyspark.sql.functions import avg
@@ -15,6 +16,7 @@ parser.add_argument("--input_path", type=str, help="Input file path")
 args = parser.parse_args()
 input_filepath = args.input_path
 
+start_time = time.time()
 # initialize SparkSession with the proper configuration
 spark = SparkSession \
     .builder \
@@ -31,18 +33,8 @@ infoDF = typedDF\
     .select("UserId", "HelpfulnessNumerator", "HelpfulnessDenominator")\
     .where(typedDF["HelpfulnessDenominator"] != 0)
 user2UtilityDF = infoDF.groupby("UserId").agg(avg((col("HelpfulnessNumerator") * 1.0) / col("HelpfulnessDenominator")).alias("Apprezzamento"))
-result = user2UtilityDF.sort(desc("Apprezzamento"))
+resultDF = user2UtilityDF.sort(desc("Apprezzamento"))
 
-result.show()
-
-# TEST: vedere il valore per l'utente A1DM7QQFK8EKNW (atteso: (1/2 + 1/2 + 1/2 + 1/2 + 1/2 + 1/2) / 6 = 0,5
-# result.where(typedDF["UserId"] == "A1DM7QQFK8EKNW").show()
-#
-#
-# OUTPUT OTTENUTO:
-# +--------------+-------------+
-# |        UserId|Apprezzamento|
-# +--------------+-------------+
-# |A1DM7QQFK8EKNW|          0.5|
-# +--------------+-------------+
-#
+resultDF.show()
+end_time = time.time()
+print("Total execution time: {} seconds".format(end_time - start_time))
