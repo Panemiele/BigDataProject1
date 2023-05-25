@@ -23,8 +23,8 @@ parser.add_argument("--output_path", type=str, help="Output folder path")
 # parse arguments
 args = parser.parse_args()
 # input_filepath, output_filepath = args.input_path, args.output_path
-input_filepath = "file:///mnt/c/Users/Gabri/OneDrive/Documenti/Università/BigData/Progetti/Progetto1/Dataset/CleanedDataset.csv"
-output_filepath = "file:///mnt/c/ProgettiPyCharm/BigDataProject1/job3/spark/output/single"
+input_filepath = "hdfs:///input/datasetDoubled.csv"
+output_filepath = "hdfs:///output/job3/spark/core"
 
 start_time = time.time()
 

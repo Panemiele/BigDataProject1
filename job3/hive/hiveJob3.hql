@@ -1,9 +1,10 @@
-ADD JAR /mnt/c/ProgettiIntellij/brickhouse/target/brickhouse-0.7.1-SNAPSHOT.jar;
+ADD JAR /home/hadoop/brickhouse-0.7.1-SNAPSHOT.jar;
 CREATE TEMPORARY FUNCTION array_union AS 'brickhouse.udf.collect.ArrayUnionUDF';
 
 DROP TABLE IF EXISTS userToProds;
 DROP TABLE IF EXISTS usersCommonProds;
 DROP TABLE IF EXISTS groupUsersCommonProds;
+DROP TABLE IF EXISTS partialResult;
 DROP TABLE IF EXISTS result;
 
 CREATE TABLE IF NOT EXISTS reviews (
@@ -20,7 +21,7 @@ COMMENT 'Cleaned Reviews Table'
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ',';
 
-LOAD DATA LOCAL INPATH '/mnt/c/Users/Gabri/OneDrive/Documenti/Università/BigData/Progetti/Progetto1/Dataset/CleanedDataset.csv' OVERWRITE INTO TABLE reviews;
+LOAD DATA LOCAL INPATH 'CleanedDatasetDoubled.csv' OVERWRITE INTO TABLE reviews;
 
 CREATE TABLE userToProds as
     SELECT UserId, ProductId
